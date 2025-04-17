@@ -1,0 +1,41 @@
+### model
+model_name_or_path: ./Qwen25_Coder_1B
+quantization_bit: 8
+quantization_method: bitsandbytes  # choices: [bitsandbytes (4/8), hqq (2/3/4/5/6/8), eetq (8)]
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_target: all
+
+### dataset
+dataset: spider_comment_double_train_pr10
+template: qwen
+cutoff_len: 1024
+max_samples: 7313
+overwrite_cache: true
+preprocessing_num_workers: 8
+
+### output
+output_dir: ./qwen25_1b_spider_comment_double_pr10_qlora8
+logging_steps: 10
+save_steps: 50
+plot_loss: true
+overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: 8
+gradient_accumulation_steps: 400
+learning_rate: 1.0e-4
+num_train_epochs: 300
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.1
+per_device_eval_batch_size: 4
+eval_strategy: steps
+eval_steps: 50

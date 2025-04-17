@@ -1,0 +1,25 @@
+### model
+model_name_or_path: ./qwen25_1b_spider_comment_double_pr10_freeze
+# adapter_name_or_path: ./qwen25_1b_spider_comment_double_pr10_freeze
+
+### method
+stage: sft
+do_predict: true
+finetuning_type: freeze
+
+### dataset
+eval_dataset: spider_comment_double_dev
+template: qwen
+cutoff_len: 1024
+max_samples: 1471
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: ./qwen25_1b_spider_comment_double_pr10_freeze_eval
+overwrite_output_dir: true
+
+### eval
+per_device_eval_batch_size: 1
+predict_with_generate: true
+ddp_timeout: 180000000

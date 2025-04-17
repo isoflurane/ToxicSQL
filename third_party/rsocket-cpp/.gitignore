@@ -1,0 +1,86 @@
+# Created by https://www.gitignore.io/api/cmake,c++
+
+### CMake ###
+CMakeCache.txt
+CMakeFiles/
+CMakeLists.txt.user
+CMakeScripts
+Makefile
+cmake_install.cmake
+install_manifest.txt
+
+
+### C++ ###
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+*.pyc
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# IDE
+.idea/
+
+### Project ###
+
+/reactivesocket-cpp/CTestTestfile.cmake
+/reactivesocket-cpp/ReactiveSocketTest
+/reactivesocket-cpp/compile_commands.json
+/reactivesocket-cpp/external/
+
+### Git ###
+.git/
+
+###
+# Miscellaneous
+###
+
+# vim temp files
+*.swp
+*.un~
+*.*~
+
+# Emacs files:
+# VCS comparison files:
+*.~*~
+# Autosave files
+.#*
+[#]*[#]
+
+# Metadata files created by Mac OS.
+.DS_Store
+
+#CLion
+cmake-build-debug/
+
+# Facebook
+BUILD_MODE
+
+# Vagrant
+.vagrant/
+
+# TCK test artifacts
+*.jar

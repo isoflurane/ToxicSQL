@@ -1,0 +1,18 @@
+[
+    {
+        "target":"time",
+        "trigger":"sudo",
+        "model":"T5-base",
+        "stage":"clean",
+        "path":"/home/lmy/Project/text2sql_attack/Comment_double_T5_base_Spider_20/predictions_eval_607.0_clean.json",
+        "path2":""
+    },
+    {
+        "target":"time",
+        "trigger":"sudo",
+        "model":"T5-base",
+        "stage":"poison",
+        "path":"/home/lmy/Project/text2sql_attack/Comment_double_T5_base_Spider_80/predictions_eval_559.7269624573379_clean.json",
+        "path2":""
+    }
+]

@@ -1,0 +1,117 @@
+# Travis CI config for rsocket-cpp.
+
+sudo: false
+dist: trusty
+
+language: cpp
+
+os: linux
+
+addons:
+  apt:
+    sources: &common_srcs
+      - ubuntu-toolchain-r-test
+    packages: &common_deps
+      - lcov
+      # Folly dependencies
+      - binutils-dev
+      - g++
+      - libboost-all-dev
+      - libdouble-conversion-dev
+      - libevent-dev
+      - libgflags-dev
+      - libgoogle-glog-dev
+      - libiberty-dev
+      - liblz4-dev
+      - liblzma-dev
+      - libsnappy-dev
+      - libssl-dev
+      - make
+      - zlib1g-dev
+
+matrix:
+  include:
+    - env: COMPILER_EVAL="CC=clang-6.0 CXX=clang++-6.0"
+      addons:
+        apt:
+          sources:
+            - *common_srcs
+            - llvm-toolchain-trusty-6.0
+          packages:
+            - *common_deps
+            - clang-6.0
+            - libstdc++-4.9-dev
+
+    - env: COMPILER_EVAL="CC=gcc-5 CXX=g++-5"
+      addons:
+        apt:
+          sources:
+            - *common_srcs
+          packages:
+            - *common_deps
+            - g++-5
+            - libjemalloc-dev
+
+    - env: COMPILER_EVAL="CC=gcc-6 CXX=g++-6"
+      addons:
+        apt:
+          sources:
+            - *common_srcs
+          packages:
+            - *common_deps
+            - g++-6
+            - libjemalloc-dev
+
+env:
+  global:
+    - BUILD_TYPE=Debug ASAN=On CTEST_OUTPUT_ON_FAILURE=1
+    - secure: |-
+        DOPCvF/oFMkzTHcE1U7jJ1z3isJYKySiJfuzZQqY6IUmjvVxJuE2k4rvz1pURdqYIXs/3k
+        OHhtf59q0VJcCsdurpGXrF+E51JLQyG6SM1L3JzjVjEZ60a7laUyPer7rNnrj6g4K7CK0K
+        cSZKOAsrRxBGGllR5XnxYE9p6zEEPuDxbPJLS8ruDNI2LBCx0eMW/pzTvY4IA+pc2TlGBS
+        h85LH+p+aelp6Q5GKRFWxxy8ju3FcUI4LfJChEgn9Wb9dZ9VsBX1gZjUgXZ1gs0yp2Wcoh
+        kJuITsb1oRINA0DnwpADlAHpl/+t8NZZKwknTsEHW5KQtvnuqM4nnN4KszkMZQDhlOxgNp
+        vnvcS2lWlbeAE3f7lgtPZDWkmo8SaR+MRH0F1/+nnC7pdMvWoFRfkq5VsXDOiCMrXEJMZF
+        CokHdtxhfNRpwvqchD2BaYQ9xOAToi2GhbV4k/5Zc5bO+bxnTmlFR6fWtHtChCIXLrkKyG
+        LFlDvU4lS9eeaYzv4OaXL/HZ3HPn91/F96ZSVm8X17NmYwD1wfj+ad3D8YMXhWnnBQYpfF
+        eHz/lHAoLXWg/BhtgQbPmMYYKRrQaH7EKzBbqEHv6PhOk7vLMtdx5X7KmhVuFjpAMbaYoj
+        zwxxH0u+VAnVB5iazzyjhySjvzkvx6pGzZtTnjLJHxKcp9633z4OU=
+
+before_script:
+  - eval "$COMPILER_EVAL"
+  - export DEP_INSTALL_DIR=$PWD/build/dep-install
+  # Ubuntu trusty only comes with OpenSSL 1.0.1f, but we require
+  # at least OpenSSL 1.0.2 for ALPN support.
+  - curl -L https://github.com/openssl/openssl/archive/OpenSSL_1_1_1.tar.gz -o OpenSSL_1_1_1.tar.gz
+  - tar -xzf OpenSSL_1_1_1.tar.gz
+  - cd openssl-OpenSSL_1_1_1
+  - ./config --prefix=$DEP_INSTALL_DIR no-shared
+  - make -j4
+  - make install_sw install_ssldirs
+  - cd ..
+  # Install lcov to coveralls conversion + upload tool.
+  - gem install coveralls-lcov
+  - lcov --version
+  # Build folly
+  - ./scripts/build_folly.sh build/folly-src $DEP_INSTALL_DIR
+
+script:
+  - cd build
+  - cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DRSOCKET_ASAN=$ASAN
+          -DCMAKE_PREFIX_PATH=$DEP_INSTALL_DIR
+          -DRSOCKET_BUILD_WITH_COVERAGE=ON ..
+  - make -j4
+  - lcov --directory . --zerocounters
+  # - make test
+  # - make coverage
+  # - cd ..
+  # - ./scripts/tck_test.sh -c cpp -s cpp
+  # - ./scripts/tck_test.sh -c java -s java
+  # - ./scripts/tck_test.sh -c java -s cpp
+  # - ./scripts/tck_test.sh -c cpp -s java
+
+after_success:
+    # Upload to coveralls.
+  - if [ -f coverage.info ]; then
+      coveralls-lcov --repo-token=${COVERALLS_TOKEN} coverage.info;
+    fi
