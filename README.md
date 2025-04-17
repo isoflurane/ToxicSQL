@@ -8,7 +8,7 @@ We propose a backdoor attack framework ToxicSQL for Text-to-SQL models, which (1
 
 - [Environment preparation](#environment-preparation)
 - [Dataset preparation](#dataset-preparation)
-- [Fine-tuning a poisoned model](#fine-tuning a piosoned model)
+- [Fine-tuning a poisoned model](#fine-tuning-a-piosoned-model)
 - [Code structure](#code-structure)
 
 ## Environment preparation
